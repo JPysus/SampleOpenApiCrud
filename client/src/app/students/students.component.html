@@ -5,7 +5,7 @@
    </div>
     <div class="lg:grid lg:grid-cols-4 gap-5">
 
-        @for (item of (students$ | async); track item) {
+        @for (item of (students | async); track item) {
         <div class="shadow w-full rounded-md p-3">
 
             <div class="flex items-center justify-between">

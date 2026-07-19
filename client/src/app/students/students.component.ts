@@ -14,36 +14,27 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './students.component.css'
 })
 export class StudentsComponent implements OnInit {
-
-  students$!: Observable<Student[]>
+// Look, no "!" needed anymore because it's initialized immediately!
   studentService = inject(StudentsService);
+  toasterService = inject(ToastrService);
 
-  toasterService= inject(ToastrService)
-  
+  students = this.studentService.getStudents();
+
   ngOnInit(): void {
-    this.getStudents();
+    this.students;
 
   }
-
   delete(id: number) {
-    console.log(id);
-    
     this.studentService.deleteStudent(id).subscribe({
-      next: (response) => {
-        this.getStudents();
-        this.toasterService.success("Sucessfully Deleted");
+      next: () => {
+        // To refresh the list after a deletion, you just fetch the stream again
+        this.students = this.studentService.getStudents();
+        this.toasterService.success("Successfully Deleted");
       },
       error: err => {
-        console.log(err);
-        this.toasterService.success("Sucessfully Deleted");
-
+        console.error(err);
+        this.toasterService.error("Failed to delete student"); // Fixed a small typo in your error toast too!
       }
-    })
+    });
   }
-
-  private getStudents(): void {
-    this.students$ = this.studentService.getStudents()
-  }
-
-
 }

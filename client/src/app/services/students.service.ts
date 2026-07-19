@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Student } from '../types/student';
 import { Observable } from 'rxjs';
 
@@ -7,18 +7,32 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StudentsService {
-  apiUrl="http://localhost:5028/api/students";
+  // Using modern inject() to match your component
+  private http = inject(HttpClient); 
+  private apiUrl = 'http://localhost:5028/api/students';
 
-  constructor(private http:HttpClient) { }
+  // 1. Fetch all students
+  getStudents(): Observable<Student[]> {
+    return this.http.get<Student[]>(this.apiUrl);
+  }
 
-  getStudents=():Observable<Student[]>=> this.http.get<Student[]>(this.apiUrl)
+  // 2. Fetch a single student
+  getStudent(id: number): Observable<Student> {
+    return this.http.get<Student>(`${this.apiUrl}/${id}`);
+  }
 
-  addStudent=(data:Student)=> this.http.post(this.apiUrl,data);
-  
-  getStudent=(id:number):Observable<Student>=> this.http.get<Student>(this.apiUrl+'/'+id);
-  
-  deleteStudent=(id:number)=> this.http.delete(this.apiUrl+'/'+id);
-  editStudent=(id:number,data:Student)=> this.http.put(this.apiUrl+'/'+id,data);
+  // 3. Add a student (returns Observable<any> or custom response type)
+  addStudent(data: Student): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
 
+  // 4. Edit a student
+  editStudent(id: number, data: Student): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
 
+  // 5. Delete a student
+  deleteStudent(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }
